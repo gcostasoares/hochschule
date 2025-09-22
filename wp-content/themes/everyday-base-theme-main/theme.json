@@ -1,0 +1,40 @@
+{
+    "version": 2,
+    "settings": {
+        "blocks": {
+            "basetheme/text": {
+                "color": false
+            }
+        },
+        "color": {
+            "defaultPalette": false,
+            "palette": [
+                {
+                    "name": "Primary",
+                    "slug": "primary",
+                    "color": "#003b49"
+                },
+                {
+                    "name": "Secondary",
+                    "slug": "secondary",
+                    "color": "#ff7d45"
+                },
+                {
+                    "name": "Black",
+                    "slug": "black",
+                    "color": "#000000"
+                },
+                {
+                    "name": "White",
+                    "slug": "white",
+                    "color": "#ffffff"
+                },
+                {
+                    "name": "Gray",
+                    "slug": "gray",
+                    "color": "#adb5bd"
+                }
+            ]
+        }
+    }
+}

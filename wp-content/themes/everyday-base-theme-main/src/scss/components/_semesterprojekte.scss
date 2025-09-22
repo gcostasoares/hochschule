@@ -1,0 +1,61 @@
+.sp {
+  --sp-pad-x: clamp(24px, 4.5vw, 56px);
+  --sp-pad-y: clamp(24px, 6vw, 72px);
+  --sp-w: min(70vw, 1200px);
+  --sp-w-wide: min(80vw, 1400px);
+
+  &__hero { padding: var(--sp-pad-y) 0 calc(var(--sp-pad-y) * .75); }
+  &__hero-content,
+  &__section,
+  &__two-col,
+  &__h2,
+  &__title,
+  &__subtitle,
+  &__content { width: var(--sp-w); margin-inline: auto; }
+
+  &__title {
+    margin: 0 0 .5rem;
+    font-size: clamp(44px, 9vw, 104px);
+    line-height: 1.03;
+    font-weight: 800;
+    letter-spacing: -.015em;
+    color: #111827;
+  }
+
+  &__subtitle {
+    margin: .75rem 0 0;
+    font-size: clamp(18px, 2.2vw, 24px);
+    line-height: 1.5;
+    font-weight: 400;
+    color: #374151;
+  }
+
+  &__hero-image,
+  &__section--slider .swiper,
+  &__section--image figure { width: var(--sp-w-wide); margin-inline: auto; }
+
+  &__hero-image,
+  .sp__slide-image { display: block; width: 80vw; height: auto; border-radius: 12px; }
+
+  &__section--text { width: var(--sp-w-wide); margin-inline: auto; }
+  &__section--text .sp__h2,
+  &__section--text .sp__content { max-width: 20vw; margin-inline: 0; text-align: left; }
+
+  &__section--text-image { width: var(--sp-w-wide); margin-inline: auto; }
+  &__section--text-image .sp__h2 { max-width: 20vw; margin-inline: 0; text-align: left; }
+  &__section--text-image .sp__two-col { width: 100%; margin-inline: 0; display: flex; gap: 2rem; align-items: flex-end; justify-content: flex-start; }
+  &__section--text-image .sp__col--text { max-width: 20vw; flex: 0 0 20vw; }
+  &__section--text-image .sp__col--image { flex: 1 1 auto; align-self: flex-end; }
+
+  @media (max-width: 1024px) {
+    &__section--text .sp__h2,
+    &__section--text .sp__content { max-width: 100%; }
+    &__section--text-image .sp__h2 { max-width: 100%; }
+    &__section--text-image .sp__two-col { flex-direction: column; align-items: flex-start; }
+    &__section--text-image .sp__col--text { max-width: 100%; flex: 0 0 auto; }
+    &__section--text-image .sp__col--image { width: 100%; }
+  }
+
+  .swiper { width: 100%; }
+  .swiper-slide { display: flex; justify-content: center; align-items: center; }
+}

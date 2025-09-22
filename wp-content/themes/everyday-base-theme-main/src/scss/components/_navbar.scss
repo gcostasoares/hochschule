@@ -1,0 +1,216 @@
+$bg: #f3f5f1;
+$ink: #1f2724;
+$muted: #5f6b66;
+$stroke: $ink;
+$hairline: 1.25px;
+$h: 64px;
+$subH: 68px;
+$linkH: 40px;
+$tabR: 8px;
+$baseline-gap: ($h - $linkH) / 2;
+$sub-baseline-gap: ($subH - $linkH) / 2;
+
+.header a { text-decoration: none; color: inherit; }
+.header button { border: 0; background: transparent; color: inherit; }
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: $bg;
+  height: $h;
+  display: grid;
+  place-items: center;
+  overflow: visible;
+  &::after { content: ""; position: absolute; inset-inline: 0; bottom: 0; height: $hairline; background: $stroke; z-index: 0; pointer-events: none; }
+  &__inner {
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    padding: 0 28px;
+    display: grid;
+    grid-template-columns: 272.4px 1fr auto;
+    align-items: center;
+    column-gap: 24px;
+    position: relative;
+    z-index: 1;
+  }
+  &__brand { display: flex; flex-direction: row; align-items: center; gap: 10px; width: 272.4px; height: 20px; overflow: hidden; }
+  &__logo { display: inline-flex; align-items: center; }
+  &__logo-img { height: 18px; width: auto; display: block; }
+  &__logo-mark { font-weight: 800; font-size: 18px; line-height: 1; }
+  &__brand-text { display: grid; row-gap: 0; font-size: 9px; line-height: 1; color: $muted; white-space: normal; }
+  &__tools { display: grid; grid-auto-flow: column; align-items: center; column-gap: 12px; }
+}
+
+.tool {
+  &--icon,
+  &--lang { padding: 6px 10px; line-height: 1; cursor: pointer; }
+  &--lang { text-transform: uppercase; letter-spacing: .12em; font-size: 16px; height: 36px; display: grid; place-items: center; border-left: $hairline solid $stroke; border-right: $hairline solid $stroke; padding: 0 18px; }
+  &--divider { width: 1px; height: 36px; background: $stroke; opacity: .65; }
+  &--divider--wide { height: 40px; margin-left: 4px; margin-right: 2px; opacity: .5; }
+  &--socials { display: grid; grid-auto-flow: column; column-gap: 14px; }
+}
+
+.ico { width: 22px; height: 22px; display: block; fill: none; stroke: currentColor; stroke-width: $hairline; stroke-linecap: round; stroke-linejoin: round; }
+
+.nav {
+  position: relative;
+  justify-self: start;
+  z-index: 1;
+  &__level { list-style: none; margin: 0; padding: 0; display: grid; grid-auto-flow: column; align-items: center; column-gap: 28px; }
+  &__item { --tab-pad-x: 8px; position: relative; padding: 0 var(--tab-pad-x); }
+}
+
+.nav__link,
+.subnav__link {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  height: $linkH;
+  padding: 0;
+  color: $ink;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  font-size: 18px;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.nav__label,
+.subnav__label { display: inline-block; transform: translateY(0); }
+
+.nav__item.is-active,
+.subnav__item.is-active { z-index: 3; }
+
+.nav__item.is-active > .nav__link,
+.subnav__item.is-active > .subnav__link { z-index: 3; position: relative; }
+
+.nav__item.is-active .nav__label,
+.subnav__item.is-active .subnav__label { transform: translateY(5px); }
+
+.nav__item.is-active::before {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  left: calc(-1 * var(--tab-pad-x));
+  right: calc(-1 * var(--tab-pad-x));
+  top: 0;
+  height: calc(#{$linkH} + #{$baseline-gap});
+  border-radius: $tabR $tabR 0 0;
+  border: $hairline solid $stroke;
+  border-bottom: 0;
+  background: transparent;
+  z-index: 3;
+}
+
+.nav__item.is-active::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  left: calc(-1 * var(--tab-pad-x) + $hairline);
+  right: calc(-1 * var(--tab-pad-x) + $hairline);
+  top: $hairline;
+  height: calc(#{$linkH} + #{$baseline-gap} - 2 * #{$hairline});
+  border-radius: calc($tabR - $hairline) calc($tabR - $hairline) 0 0;
+  background: $bg;
+  z-index: 2;
+}
+
+.nav__item.is-active > .nav__link::after {
+  content: "";
+  position: absolute;
+  left: calc(-1 * var(--tab-pad-x) - 7px);
+  right: calc(-1 * var(--tab-pad-x) - 7px);
+  bottom: calc(-1 * #{$baseline-gap} - #{$hairline} - 1px);
+  height: calc($hairline + 3px);
+  background: $bg;
+  z-index: 4;
+  pointer-events: none;
+}
+
+@media (max-width: 980px) {
+  .header__brand-text { display: none; }
+  .nav__level { column-gap: 18px; }
+  .nav__link,
+  .subnav__link { font-size: 16px; }
+}
+
+@media (max-width: 760px) {
+  .header__inner { grid-template-columns: 1fr auto; }
+  .nav { display: none; }
+}
+
+.subnav {
+  position: relative;
+  background: $bg;
+  display: grid;
+  align-items: center;
+  justify-items: start;
+  min-height: $subH;
+  z-index: 90;
+  overflow: visible;
+  &::after { content: ""; position: absolute; inset-inline: 0; bottom: 0; height: $hairline; background: $stroke; }
+  &__level {
+    list-style: none;
+    margin: 0;
+    padding: 0 28px;
+    max-width: none;
+    display: grid;
+    grid-auto-flow: column;
+    align-items: center;
+    column-gap: 28px;
+  }
+  &__item { --tab-pad-x: 8px; position: relative; padding: 0 var(--tab-pad-x); }
+  &__item.has-children > .subnav__link::after { content: "▾"; margin-inline-start: .5ch; font-size: .75em; line-height: 1; }
+}
+
+.subnav__item.is-active::before {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  left: calc(-1 * var(--tab-pad-x));
+  right: calc(-1 * var(--tab-pad-x));
+  top: 0;
+  height: calc(#{$linkH} + #{$sub-baseline-gap});
+  border-radius: $tabR $tabR 0 0;
+  border: $hairline solid $stroke;
+  border-bottom: 0;
+  background: transparent;
+  z-index: 3;
+}
+
+.subnav__item.is-active::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  left: calc(-1 * var(--tab-pad-x) + $hairline);
+  right: calc(-1 * var(--tab-pad-x) + $hairline);
+  top: $hairline;
+  height: calc(#{$linkH} + #{$sub-baseline-gap} - 2 * #{$hairline});
+  border-radius: calc($tabR - $hairline) calc($tabR - $hairline) 0 0;
+  background: $bg;
+  z-index: 2;
+}
+
+.subnav__item.is-active > .subnav__link::after {
+  content: "";
+  position: absolute;
+  left: calc(-1 * var(--tab-pad-x) - 7px);
+  right: calc(-1 * var(--tab-pad-x) - 7px);
+  bottom: calc(-1 * #{$sub-baseline-gap} - #{$hairline} - 1px);
+  height: calc($hairline + 3px);
+  background: $bg;
+  z-index: 4;
+  pointer-events: none;
+}
+
+@media (max-width: 980px) {
+  .subnav__level { column-gap: 18px; }
+}
+
+@media (max-width: 760px) {
+  .subnav { display: none; }
+}
+
+

@@ -1,0 +1,32 @@
+@import 'configuration/variables';
+
+// Utilities - Bootstrap API
+@import 'utilities/utility-api';
+
+// Import Bootstrap scss
+@import 'bootstrap';
+
+@import "backend/editor";
+
+// Utilities
+@import "utilities/swiper";
+@import "utilities/image-backdrop";
+@import "utilities/height";
+
+// Override
+@import "override/swiper";
+@import "override/cf7";
+
+// Components
+@import "components/navigation";
+@import "components/hero-slider";
+@import "components/logo-swiper";
+@import "components/big-teaser";
+@import "components/blog-post";
+@import "components/reference-post";
+@import "components/person";
+@import "components/footer";
+@import "components/google-maps";
+@import "components/heading";
+@import "components/semesterprojekte";
+@import "components/navbar"

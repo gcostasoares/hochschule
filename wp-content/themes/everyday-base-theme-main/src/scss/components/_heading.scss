@@ -1,0 +1,16 @@
+.wp-block-basetheme-heading,
+.bs-heading {
+  --bs-heading-color: blue; 
+}
+
+
+.wp-block-basetheme-heading .heading a,
+.bs-heading a {
+  color: inherit;
+}
+
+
+.editor-styles-wrapper .wp-block-basetheme-heading,
+.editor-styles-wrapper .bs-heading {
+  --bs-heading-color: blue;
+}

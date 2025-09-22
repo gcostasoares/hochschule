@@ -1,0 +1,15 @@
+$nav-bg:    #f3f2ea;
+$nav-ink:   #1f2937;
+$nav-muted: #374151;
+$nav-line:  #1f2937;
+
+$nav-gap: 1rem;
+$nav-brand-radius: .375rem;
+$nav-tab-radius: .75rem;
+
+:root {
+  --bg: #{$nav-bg};
+  --ink: #{$nav-ink};
+  --muted: #{$nav-muted};
+  --line: #{$nav-line};
+}

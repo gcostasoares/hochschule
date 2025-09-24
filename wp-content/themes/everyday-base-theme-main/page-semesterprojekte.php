@@ -1,65 +1,116 @@
 <?php
-/** Template Name: Semesterprojekte (Archive view) */
+
 use basetheme\Utilities\Render_Navigation;
 
 get_header();
+?>
+<style>
+  html,body{overflow-x:hidden;background:#f3f5f1;}
+</style>
+<?php
 
-// Always print the PHP header/nav (works even on block themes)
 if (class_exists(Render_Navigation::class)) {
   Render_Navigation::render_navigation();
 }
 
-// Query the CPT so this page behaves like the archive
 $paged = max(1, (int) get_query_var('paged'));
 $q = new WP_Query([
   'post_type'      => 'semesterprojekte',
   'post_status'    => 'publish',
   'posts_per_page' => 12,
   'paged'          => $paged,
+  'orderby'        => 'date',
+  'order'          => 'ASC', // oldest first
 ]);
 ?>
+
 <section class="sp-archive">
   <header class="sp-archive__hero">
-    <h1 class="sp-archive__title"><?php the_title(); ?></h1>
+    <div class="sp-hero-italic">
+      <div class="sp-hero-italic__box">
+        <h2 class="sp-hero-italic__title">SEMESTERPROJEKTE</h2>
+        <h5 class="sp-hero-italic__subtitle">PROJEKTE</h5>
+      </div>
+    </div>
+
+    <div class="sp-hero-row">
+      <div class="sp-hero-row__left">
+        <div class="sp-hero-row__content">
+          <div class="sp-hero-row__text">
+            <p>Hier findest du eine Übersicht unserer Semesterprojekte</p>
+          </div>
+        </div>
+      </div>
+      <div class="sp-hero-row__right" aria-hidden="true"></div>
+    </div>
   </header>
 
-  <div class="container sp-archive__grid">
-    <?php if ($q->have_posts()): ?>
-      <?php while ($q->have_posts()): $q->the_post(); ?>
-        <article <?php post_class('sp-card'); ?>>
-          <a class="sp-card__link" href="<?php the_permalink(); ?>">
-            <div class="sp-card__thumb">
-              <?php
-              $hero = function_exists('get_field') ? get_field('hero', get_the_ID()) : null;
-              $img  = is_array($hero) && !empty($hero['hero_image']) ? $hero['hero_image'] : null;
-              if (is_array($img) && !empty($img['ID'])) {
-                echo wp_get_attachment_image((int)$img['ID'], 'large', false, ['class'=>'sp-card__img']);
-              } elseif (has_post_thumbnail()) {
-                the_post_thumbnail('large', ['class'=>'sp-card__img']);
-              }
-              ?>
-            </div>
-            <div class="sp-card__meta">
-              <h2 class="sp-card__title"><?php the_title(); ?></h2>
-              <?php if (!empty($hero['hero_subtitle'])): ?>
-                <p class="sp-card__kicker"><?php echo esc_html($hero['hero_subtitle']); ?></p>
+  <div class="sp-stream">
+    <?php
+      $i = 0;
+      if ($q->have_posts()):
+        while ($q->have_posts()): $q->the_post();
+          $i++;
+          $odd_even = ($i % 2 === 0) ? 'is-even' : 'is-odd';
+
+          $hero     = get_field('hero', get_the_ID());
+          $h_title  = is_array($hero) && !empty($hero['hero_title']) ? (string)$hero['hero_title'] : get_the_title();
+          $h_sub    = is_array($hero) ? (string)($hero['hero_subtitle'] ?? '') : '';
+          $h_img    = is_array($hero) ? ($hero['hero_image'] ?? null) : null;
+
+          $img_url = '';
+          $w = $h = 0;
+          if ($h_img && is_array($h_img)) {
+            $src = wp_get_attachment_image_src($h_img['ID'], 'full');
+            if ($src) {
+              $img_url = esc_url($src[0]);
+              $w = (int)$src[1];
+              $h = (int)$src[2];
+            }
+          }
+
+          $render_w  = ($w > 0 && $h > 0) ? (int) round($w * (370 / $h)) : 946;
+          $style_vars = sprintf('--media-w:%dpx;--z:%d;', $render_w, $i);
+    ?>
+      <section class="sp-block <?php echo $odd_even; ?>" style="<?php echo esc_attr($style_vars); ?>">
+          <div class="sp-block__media">
+            <div class="sp-block__mediaTwin" aria-hidden="true"></div>
+            <div class="sp-block__mediaWrap">
+              <?php if ($img_url): ?>
+                <img src="<?php echo $img_url; ?>" alt="<?php echo esc_attr($h_title); ?>">
               <?php endif; ?>
             </div>
-          </a>
-        </article>
-      <?php endwhile; wp_reset_postdata(); ?>
-    <?php else: ?>
-      <p>Keine Projekte gefunden.</p>
-    <?php endif; ?>
+            <a class="sp-block__mediaLink" href="<?php echo esc_url( get_permalink() ); ?>" aria-label="<?php echo esc_attr($h_title); ?>"></a>
+          </div>
+
+          <div class="sp-block__meta">
+            <div class="sp-block__metaInner">
+              <div class="sp-block__textSkew">
+                <h3 class="sp-block__title"><?php echo esc_html($h_title); ?></h3>
+                  <div class="sp-block__subtitles">
+                    <div class="sp-block__subtitle"><?php echo esc_html($h_sub); ?></div>
+                  </div>
+              </div>
+            </div>
+            <a class="sp-block__metaLink" href="<?php echo esc_url( get_permalink() ); ?>" aria-label="<?php echo esc_attr($h_title); ?>"></a>
+          </div>
+        </section>
+
+    <?php
+        endwhile;
+        wp_reset_postdata();
+      endif;
+    ?>
   </div>
 
   <nav class="sp-archive__pagination">
     <?php
-    echo paginate_links([
-      'total'   => (int) $q->max_num_pages,
-      'current' => $paged,
-    ]);
+      echo paginate_links([
+        'total'   => (int) $q->max_num_pages,
+        'current' => $paged,
+      ]);
     ?>
   </nav>
 </section>
-<?php get_footer();
+
+<?php get_footer(); ?>

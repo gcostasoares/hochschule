@@ -10,10 +10,9 @@ class Render_Navigation
             $navigation = self::get_navigation_from_wp_tree();
         }
 
-        // Active top-level section (current item, ancestor, OR URL prefix)
         $active_section = self::find_active_section($navigation);
 
-        // If the active section has no children in the menu, fetch page-children as a fallback
+
         if (!empty($active_section) && empty($active_section['children']) && !empty($active_section['object_id'])) {
             $active_section['children'] = self::get_direct_page_children((int) $active_section['object_id']);
         }
@@ -93,7 +92,7 @@ class Render_Navigation
         <?php endif;
     }
 
-    /** Build a hierarchical tree from WP menu "primary" (preferred), with children. */
+
     private static function get_navigation_from_wp_tree(): array {
         $tree = [];
         $locs = get_nav_menu_locations();
@@ -101,10 +100,9 @@ class Render_Navigation
         if (!empty($locs['primary'])) {
             $menu_items = wp_get_nav_menu_items($locs['primary']) ?: [];
 
-            // Ensure menu order for stable output
             usort($menu_items, fn($a, $b) => ($a->menu_order <=> $b->menu_order));
 
-            // Index by menu item ID
+
             $by_id = [];
             foreach ($menu_items as $mi) {
                 $by_id[$mi->ID] = [
@@ -116,7 +114,7 @@ class Render_Navigation
                     'children'  => [],
                 ];
             }
-            // Attach children
+     
             foreach ($by_id as $id => &$node) {
                 if ($node['parent_id'] && isset($by_id[$node['parent_id']])) {
                     $by_id[$node['parent_id']]['children'][] = &$node;
@@ -124,13 +122,13 @@ class Render_Navigation
             }
             unset($node);
 
-            // Collect top level
+    
             foreach ($by_id as $node) {
                 if ($node['parent_id'] === 0) $tree[] = $node;
             }
         }
 
-        // Fallback (no menu): 4 static entries without children
+  
         if (empty($tree)) {
             $ordered_slugs = ['home','projekte','netzwerk','events'];
             foreach ($ordered_slugs as $slug) {
@@ -160,14 +158,12 @@ class Render_Navigation
         return $tree;
     }
 
-    /** Normalize URL to path, language-safe, no trailing slash (except root). */
     private static function path_of(string $url): string {
         $path = parse_url($url, PHP_URL_PATH) ?? '/';
         $path = $path === '' ? '/' : $path;
         return $path === '/' ? '/' : untrailingslashit($path);
     }
 
-    /** Current request path (no domain), e.g. "/projekte/foo". */
     private static function current_path(): string {
         $raw  = $_SERVER['REQUEST_URI'] ?? '/';
         $path = parse_url($raw, PHP_URL_PATH) ?? '/';
@@ -175,7 +171,7 @@ class Render_Navigation
         return $path === '/' ? '/' : untrailingslashit($path);
     }
 
-    /** Is this item exactly the current page? */
+
     private static function item_is_current(array $item): bool {
         $front_id = (int) get_option('page_on_front');
 
@@ -186,14 +182,14 @@ class Render_Navigation
             if (is_page($item['object_id'])) return true;
         }
 
-        // Compare paths safely against the actual request path
+
         $current_path = self::current_path();
         $item_path    = self::path_of((string)($item['href'] ?? ''));
 
         return ($item_path !== '') && ($item_path === $current_path);
     }
 
-    /** Does any descendant match current page? */
+
     private static function subtree_has_current(array $item): bool {
         foreach ($item['children'] ?? [] as $child) {
             if (self::item_is_current($child) || self::subtree_has_current($child)) return true;
@@ -201,23 +197,23 @@ class Render_Navigation
         return false;
     }
 
-    /** Choose active top-level section by: exact match, descendant match, OR URL prefix (/projekte/…). */
+
     private static function find_active_section(array $top_level): array {
         if (empty($top_level)) return [];
 
         $current_path = self::current_path();
 
-        // 1) exact match at top level
+
         foreach ($top_level as $item) {
             if (self::item_is_current($item)) return $item;
         }
 
-        // 2) a top-level item that contains current page in its subtree
+
         foreach ($top_level as $item) {
             if (self::subtree_has_current($item)) return $item;
         }
 
-        // 3) URL prefix rule: /projekte/... should activate Projekte even if the menu isn't nested
+
         foreach ($top_level as $item) {
             $item_path = self::path_of((string)($item['href'] ?? ''));
             if ($item_path === '/') continue;
@@ -231,12 +227,12 @@ class Render_Navigation
         return [];
     }
 
-    /** When menu has no children, fetch direct child pages of a given parent page ID. */
+
     private static function get_direct_page_children(int $parent_id): array {
         if (!$parent_id) return [];
 
         $pages = get_pages([
-            'parent'      => $parent_id,   // only direct children
+            'parent'      => $parent_id,  
             'sort_column' => 'menu_order,post_title',
             'post_status' => 'publish',
         ]);
@@ -249,13 +245,13 @@ class Render_Navigation
                 'object_id' => (int) $p->ID,
                 'title'     => get_the_title($p->ID),
                 'href'      => get_permalink($p->ID),
-                'children'  => [], // extend to grandchildren later if needed
+                'children'  => [], 
             ];
         }
         return $out;
     }
 
-    /** Render top-level bar */
+
     private static function render_top_level(array $top_level, array $active_section): void {
         echo '<ul class="nav__level nav__level--0">';
         foreach ($top_level as $item) {
@@ -279,7 +275,7 @@ class Render_Navigation
         echo '</ul>';
     }
 
-    /** Render second bar: immediate children of active section */
+
     private static function render_sub_level(array $children): void {
         if (empty($children)) return;
 

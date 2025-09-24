@@ -1,7 +1,5 @@
 <?php
-/** archive-semesterprojekte.php */
 
-// HEADER (block-theme safe)
 if (function_exists('block_template_part')) {
   block_template_part('header');
 } else {

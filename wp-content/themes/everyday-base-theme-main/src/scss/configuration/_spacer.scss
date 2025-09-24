@@ -17,3 +17,14 @@ $spacers: (
     13: $spacer * 9,
     14: $spacer * 10,
 );
+
+$stroke: $ink;
+$hairline: 1.25px;
+$h: 64px;
+$subH: 68px;
+$linkH: 40px;
+$tabR: 8px;
+$baseline-gap: ($h - $linkH) / 2;
+$sub-baseline-gap: ($subH - $linkH) / 2;
+$tabL: 145px;
+$pad-extra: 45px;

@@ -1,8 +1,7 @@
 <?php
-/** Single template for CPT: semesterprojekte */
+
 get_header();
 
-/* Fallback: inject navigation if the header didn't render it */
 if ( ! did_action('basetheme_header_nav_rendered') ) {
   if ( class_exists('\basetheme\Utilities\Render_Navigation') && is_callable(['\basetheme\Utilities\Render_Navigation','render_navigation']) ) {
     \basetheme\Utilities\Render_Navigation::render_navigation();

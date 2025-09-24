@@ -20,7 +20,7 @@ $q = new WP_Query([
   'posts_per_page' => 12,
   'paged'          => $paged,
   'orderby'        => 'date',
-  'order'          => 'ASC', // oldest first
+  'order'          => 'ASC',
 ]);
 ?>
 
@@ -53,49 +53,63 @@ $q = new WP_Query([
           $i++;
           $odd_even = ($i % 2 === 0) ? 'is-even' : 'is-odd';
 
-          $hero     = get_field('hero', get_the_ID());
-          $h_title  = is_array($hero) && !empty($hero['hero_title']) ? (string)$hero['hero_title'] : get_the_title();
-          $h_sub    = is_array($hero) ? (string)($hero['hero_subtitle'] ?? '') : '';
-          $h_img    = is_array($hero) ? ($hero['hero_image'] ?? null) : null;
+          $hero    = get_field('hero', get_the_ID());
+          $h_title = is_array($hero) && !empty($hero['hero_title']) ? (string)$hero['hero_title'] : get_the_title();
+          $h_sub   = is_array($hero) ? (string)($hero['hero_subtitle'] ?? '') : '';
+          $h_img   = is_array($hero) ? ($hero['hero_image'] ?? null) : null;
 
           $img_url = '';
-          $w = $h = 0;
-          if ($h_img && is_array($h_img)) {
-            $src = wp_get_attachment_image_src($h_img['ID'], 'full');
+          $img_w_orig = 0;
+          $img_h_orig = 0;
+
+          if ($h_img && is_array($h_img) && !empty($h_img['ID'])) {
+            $img_id = (int) $h_img['ID'];
+            $src = wp_get_attachment_image_src($img_id, 'full');
             if ($src) {
               $img_url = esc_url($src[0]);
-              $w = (int)$src[1];
-              $h = (int)$src[2];
+              $img_w_orig = (int) $src[1];
+              $img_h_orig = (int) $src[2];
+            } else {
+              $meta = wp_get_attachment_metadata($img_id);
+              if (!empty($meta['width']) && !empty($meta['height'])) {
+                $img_w_orig = (int) $meta['width'];
+                $img_h_orig = (int) $meta['height'];
+                $img_url = esc_url(wp_get_attachment_url($img_id));
+              }
             }
           }
 
-          $render_w  = ($w > 0 && $h > 0) ? (int) round($w * (370 / $h)) : 946;
-          $style_vars = sprintf('--media-w:%dpx;--z:%d;', $render_w, $i);
+          $fixed_display_w = 370;
+          $render_h = 246;
+          if ($img_w_orig > 0 && $img_h_orig > 0) {
+            $render_h = (int) round($img_h_orig * ($fixed_display_w / $img_w_orig));
+          }
+
+          $style_vars = sprintf('--media-w:%dpx;--img-w:%dpx;--img-h:%dpx;--z:%d;', $fixed_display_w, $fixed_display_w, $render_h, $i);
     ?>
       <section class="sp-block <?php echo $odd_even; ?>" style="<?php echo esc_attr($style_vars); ?>">
-          <div class="sp-block__media">
-            <div class="sp-block__mediaTwin" aria-hidden="true"></div>
-            <div class="sp-block__mediaWrap">
-              <?php if ($img_url): ?>
-                <img src="<?php echo $img_url; ?>" alt="<?php echo esc_attr($h_title); ?>">
-              <?php endif; ?>
-            </div>
-            <a class="sp-block__mediaLink" href="<?php echo esc_url( get_permalink() ); ?>" aria-label="<?php echo esc_attr($h_title); ?>"></a>
+        <div class="sp-block__media">
+          <div class="sp-block__mediaTwin" aria-hidden="true"></div>
+          <div class="sp-block__mediaWrap">
+            <?php if ($img_url): ?>
+              <img src="<?php echo $img_url; ?>" alt="<?php echo esc_attr($h_title); ?>">
+            <?php endif; ?>
           </div>
+          <a class="sp-block__mediaLink" href="<?php echo esc_url(get_permalink()); ?>" aria-label="<?php echo esc_attr($h_title); ?>"></a>
+        </div>
 
-          <div class="sp-block__meta">
-            <div class="sp-block__metaInner">
-              <div class="sp-block__textSkew">
-                <h3 class="sp-block__title"><?php echo esc_html($h_title); ?></h3>
-                  <div class="sp-block__subtitles">
-                    <div class="sp-block__subtitle"><?php echo esc_html($h_sub); ?></div>
-                  </div>
+        <div class="sp-block__meta">
+          <div class="sp-block__metaInner">
+            <div class="sp-block__textSkew">
+              <h3 class="sp-block__title"><?php echo esc_html($h_title); ?></h3>
+              <div class="sp-block__subtitles">
+                <div class="sp-block__subtitle"><?php echo esc_html($h_sub); ?></div>
               </div>
             </div>
-            <a class="sp-block__metaLink" href="<?php echo esc_url( get_permalink() ); ?>" aria-label="<?php echo esc_attr($h_title); ?>"></a>
           </div>
-        </section>
-
+          <a class="sp-block__metaLink" href="<?php echo esc_url(get_permalink()); ?>" aria-label="<?php echo esc_attr($h_title); ?>"></a>
+        </div>
+      </section>
     <?php
         endwhile;
         wp_reset_postdata();

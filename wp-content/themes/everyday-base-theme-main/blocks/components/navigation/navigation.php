@@ -29,7 +29,7 @@ function get_nested_navigation_links($ref)
         if ($item->id === (int) $ref) {
             $dom = new DOMDocument();
 
-            // Ensure the content is treated as UTF-8
+
             $html_content = mb_convert_encoding($item->content->rendered, 'HTML-ENTITIES', 'UTF-8');
             @$dom->loadHTML($html_content);
 
@@ -45,13 +45,13 @@ function parse_navigation_items($dom)
     $items = [];
     $xpath = new DOMXPath($dom);
 
-    // Select all <li> elements in the document, not limited to those inside <ul>
+
     $li_elements = $xpath->query('//li');
 
     foreach ($li_elements as $node) {
         $link_element = $node->getElementsByTagName('a')->item(0);
 
-        // Check if the <li> element has no parent <li> before adding it to items
+  
         if ($link_element && !$xpath->query('ancestor::li', $node)->length) {
             $item = [
                 'href'  => $link_element->getAttribute('href'),
@@ -59,7 +59,6 @@ function parse_navigation_items($dom)
                 'children' => []
             ];
 
-            // Check if this <li> has a nested <ul> for child items
             $child_ul = $node->getElementsByTagName('ul')->item(0);
             if ($child_ul) {
                 $item['children'] = parse_nested_items($child_ul);
@@ -72,7 +71,6 @@ function parse_navigation_items($dom)
     return $items;
 }
 
-// Helper function to parse nested items within a <ul>
 function parse_nested_items($ul_element)
 {
     $children = [];
